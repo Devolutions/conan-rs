@@ -1,0 +1,20 @@
+[package]
+name = "conan"
+version = "0.1.0"
+readme = "README.md"
+license = "MIT/Apache-2.0"
+keywords = ["conan", "build-dependencies"]
+repository = "https://github.com/devolutions/conan-rs"
+homepage = "https://github.com/devolutions/conan-rs"
+documentation = "https://docs.rs/conan"
+authors = ["Marc-André Moreau <mamoreau@devolutions.net>"]
+categories = ["development-tools::build-utils"]
+description = """
+A Rust wrapper of the conan C/C++ package manager (conan.io) to simplify usage in build scripts
+"""
+edition = "2018"
+
+[dependencies]
+regex = "1.0"
+which = "2.0"
+lazy_static = "1.0"
