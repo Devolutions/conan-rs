@@ -1,0 +1,49 @@
+{
+  "deps_env_info": {},
+  "deps_user_info": {
+    "openssl": {}
+  },
+  "dependencies": [
+    {
+      "version": "1.1.1b-2",
+      "description": "TLS/SSL and crypto library",
+      "rootpath": "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6",
+      "sysroot": "",
+      "include_paths": [
+        "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6/include"
+      ],
+      "lib_paths": [
+        "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6/lib"
+      ],
+      "bin_paths": [],
+      "build_paths": [
+        "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6/"
+      ],
+      "res_paths": [],
+      "libs": [
+        "ssl",
+        "crypto"
+      ],
+      "defines": [],
+      "cflags": [],
+      "cxxflags": [],
+      "sharedlinkflags": [],
+      "exelinkflags": [],
+      "cppflags": [],
+      "name": "openssl"
+    }
+  ],
+  "settings": {
+    "arch": "x86_64",
+    "arch_build": "x86_64",
+    "build_type": "Release",
+    "compiler": "gcc",
+    "compiler.libcxx": "libstdc++",
+    "compiler.version": "4.8",
+    "os": "Linux",
+    "os_build": "Linux"
+  },
+  "options": {
+    "openssl": {}
+  }
+}
