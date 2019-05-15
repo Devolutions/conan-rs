@@ -12,7 +12,8 @@ extern crate lazy_static;
 // https://github.com/conan-io/cmake-conan/blob/develop/conan.cmake
 
 use std::fmt;
-use std::path::PathBuf;
+use std::fs::File;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 
 use regex::Regex;
@@ -192,6 +193,10 @@ pub struct BuildDependency {
 }
 
 impl BuildDependency {
+    pub fn get_root_dir(&self) -> Option<&str> {
+        Some(self.rootpath.as_str())
+    }
+
     pub fn get_library_dir(&self) -> Option<&str> {
         self.lib_paths.get(0).map(|x| &**x)
     }
@@ -230,8 +235,32 @@ impl BuildInfo {
         serde_json::from_str(&json).ok()
     }
 
+    pub fn from_file(path: &Path) -> Option<Self> {
+        if let Ok(json_file) = File::open(path) {
+            serde_json::from_reader(&json_file).ok()
+        } else {
+            None
+        }
+    }
+
     pub fn get_dependency(&self, name: &str) -> Option<&BuildDependency> {
         self.dependencies.iter().find(|&x| x.name == name)
+    }
+
+    pub fn cargo_emit(&self) {
+        for dependency in &self.dependencies {
+            for lib_path in &dependency.lib_paths {
+                println!("cargo:rustc-link-search=native={}", lib_path);
+            }
+
+            for lib in &dependency.libs {
+                println!("cargo:rustc-link-lib={}", lib);
+            }
+
+            for include_path in &dependency.include_paths {
+                println!("cargo:include={}", include_path);
+            }
+        }
     }
 }
 
@@ -241,8 +270,10 @@ fn test_conan_build_info() {
 
     let openssl = build_info.get_dependency("openssl").unwrap();
     assert_eq!(openssl.get_binary_dir(), None);
+    let openssl_dir = openssl.get_root_dir().unwrap();
     let openssl_lib_dir = openssl.get_library_dir().unwrap();
     let openssl_inc_dir = openssl.get_include_dir().unwrap();
+    assert_eq!(openssl_dir, "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6");
     assert_eq!(openssl_lib_dir, "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6/lib");
     assert_eq!(openssl_inc_dir, "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6/include");
 
@@ -255,4 +286,10 @@ fn test_conan_build_info() {
     assert_eq!(settings.compiler_version, "4.8");
     assert_eq!(settings.os, "Linux");
     assert_eq!(settings.os_build, "Linux");
+}
+
+#[test]
+fn test_cargo_build_info() {
+    let build_info = BuildInfo::from_str(include_str!("../test/conanbuildinfo.json")).unwrap();
+    build_info.cargo_emit();
 }
