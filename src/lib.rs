@@ -12,9 +12,10 @@ extern crate lazy_static;
 // https://github.com/conan-io/cmake-conan/blob/develop/conan.cmake
 
 use std::fmt;
+use std::io;
 use std::fs::File;
 use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::process::{Command, Output};
 
 use regex::Regex;
 
@@ -292,4 +293,168 @@ fn test_conan_build_info() {
 fn test_cargo_build_info() {
     let build_info = BuildInfo::from_str(include_str!("../test/conanbuildinfo.json")).unwrap();
     build_info.cargo_emit();
+}
+
+#[derive(Clone,PartialEq)]
+pub enum BuildType {
+    None,
+    Debug,
+    Release,
+    RelWithDebInfo,
+    MinSizeRel,
+}
+
+impl BuildType {
+    pub fn as_str(&self) -> &str {
+        match self {
+            &BuildType::None => "None",
+            &BuildType::Debug => "Debug",
+            &BuildType::Release => "Release",
+            &BuildType::RelWithDebInfo => "RelWithDebInfo",
+            &BuildType::MinSizeRel => "MinSizeRel",
+        }
+    }
+}
+
+#[derive(Clone,PartialEq)]
+pub enum BuildPolicy {
+    Never,
+    Always,
+    Missing,
+    Outdated,
+}
+
+pub struct InstallCommand<'a> {
+    profile: Option<&'a str>,
+    remote: Option<&'a str>,
+    build_type: Option<BuildType>,
+    build_policy: Option<BuildPolicy>,
+    output_dir: Option<PathBuf>,
+    update_check: bool,
+}
+
+pub struct InstallCommandBuilder<'a> {
+    profile: Option<&'a str>,
+    remote: Option<&'a str>,
+    build_type: Option<BuildType>,
+    build_policy: Option<BuildPolicy>,
+    output_dir: Option<PathBuf>,
+    update_check: bool,
+}
+
+impl<'a> InstallCommandBuilder<'a> {
+    pub fn new() -> InstallCommandBuilder<'a> {
+        InstallCommandBuilder {
+            profile: None,
+            remote: None,
+            build_type: None,
+            build_policy: None,
+            output_dir: None,
+            update_check: false,
+        }
+    }
+
+    pub fn with_profile(mut self, profile: &'a str) -> Self {
+        self.profile = Some(profile);
+        self
+    }
+
+    pub fn with_remote(mut self, remote: &'a str) -> Self {
+        self.remote = Some(remote);
+        self
+    }
+
+    pub fn build_type(mut self, build_type: BuildType) -> Self {
+        self.build_type = Some(build_type);
+        self
+    }
+
+    pub fn build_policy(mut self, build_policy: BuildPolicy) -> Self {
+        self.build_policy = Some(build_policy);
+        self
+    }
+
+    pub fn output_dir(mut self, output_dir: &Path) -> Self {
+        self.output_dir = Some(output_dir.to_path_buf());
+        self
+    }
+
+    pub fn update_check(mut self) -> Self {
+        self.update_check = true;
+        self
+    }
+
+    pub fn build(self) -> InstallCommand<'a> {
+        InstallCommand {
+            profile: self.profile,
+            remote: self.remote,
+            build_type: self.build_type,
+            build_policy: self.build_policy,
+            output_dir: self.output_dir,
+            update_check: self.update_check,
+        }
+    }
+}
+
+impl<'a> InstallCommand<'a> {
+    pub fn run(&self) -> io::Result<Output> {
+        let mut command = Command::new("conan");
+
+        let mut command = command.arg("install")
+            .arg("-g").arg("json");
+
+        if let Some(profile) = &self.profile {
+            command = command.arg("-pr").arg(profile);
+        }
+
+        if let Some(remote) = &self.remote {
+            command = command.arg("-r").arg(remote);
+        }
+
+        if self.update_check {
+            command = command.arg("-u");
+        }
+
+        if let Some(build_policy) = &self.build_policy {
+            match build_policy {
+                BuildPolicy::Never => {
+                    command = command.arg("-b").arg("never");
+                },
+                BuildPolicy::Always => {
+                    command = command.arg("-b");
+                },
+                BuildPolicy::Missing => {
+                    command = command.arg("-b").arg("missing");
+                },
+                BuildPolicy::Outdated => {
+                    command = command.arg("-b").arg("outdated");
+                }
+            }
+        }
+
+        if let Some(build_type) = &self.build_type {
+            let value = format!("build_type={}", build_type.as_str());
+            command = command.arg("-s").arg(value);
+        }
+
+        if let Some(output_dir) = &self.output_dir {
+            command = command.arg("-if").arg(output_dir.to_str().unwrap());
+        }
+
+        println!("install command: {:?}", command);
+
+        command.output()
+    }
+}
+
+#[test]
+fn test_install_builder() {
+    let profile = "linux-x86_64";
+    let command = InstallCommandBuilder::new()
+        .with_profile(profile)
+        .build_type(BuildType::Release)
+        .build_policy(BuildPolicy::Missing)
+        .build();
+    assert_eq!(command.profile, Some(profile));
+    command.run().unwrap();
 }
