@@ -3,7 +3,7 @@ name = "conan"
 version = "0.1.0"
 readme = "README.md"
 license = "MIT/Apache-2.0"
-keywords = ["conan", "build-dependencies"]
+keywords = ["conan", "cmake", "build-dependencies"]
 repository = "https://github.com/devolutions/conan-rs"
 homepage = "https://github.com/devolutions/conan-rs"
 documentation = "https://docs.rs/conan"
@@ -17,6 +17,7 @@ edition = "2018"
 [dependencies]
 regex = "1.0"
 which = "2.0"
+indexmap = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 lazy_static = "1.0"
