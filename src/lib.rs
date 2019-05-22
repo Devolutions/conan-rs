@@ -31,36 +31,37 @@ lazy_static! {
 }
 
 pub fn find_program() -> Option<PathBuf> {
+    if let Ok(conan) = env::var("CONAN") {
+        return Some(PathBuf::from(conan));
+    }
     which::which("conan").ok()
 }
 
 pub fn find_version() -> Option<String> {
-    let conan_program = find_program();
-
-    if conan_program.is_none() {
-        return None;
-    }
-
-    let conan_program = conan_program.unwrap().as_path().to_str().unwrap().to_string();
+    let conan_program = find_program()?;
+    let conan_program = conan_program.as_path().to_str().unwrap().to_string();
 
     let output = Command::new(&conan_program)
         .arg("--version")
-        .output()
-        .expect("failed to execute conan");
+        .output();
 
     // $ conan --version
     // Conan version 1.14.3
 
-    let output_stdout = String::from_utf8(output.stdout).unwrap();
-    let captures = REGEX_CONAN_VERSION.captures(output_stdout.as_str().trim()).unwrap();
+    if let Ok(output) = output {
+        let output_stdout = String::from_utf8(output.stdout).unwrap();
+        let captures = REGEX_CONAN_VERSION.captures(output_stdout.as_str().trim()).unwrap();
 
-    let version_major = captures[1].parse::<u8>().unwrap();
-    let version_minor = captures[2].parse::<u8>().unwrap();
-    let version_micro = captures[3].parse::<u8>().unwrap();
+        let version_major = captures[1].parse::<u8>().unwrap();
+        let version_minor = captures[2].parse::<u8>().unwrap();
+        let version_micro = captures[3].parse::<u8>().unwrap();
 
-    let version = format!("{}.{}.{}", version_major, version_minor, version_micro);
+        let version = format!("{}.{}.{}", version_major, version_minor, version_micro);
 
-    Some(version)
+        return Some(version);
+    }
+
+    None
 }
 
 #[test]
@@ -262,13 +263,15 @@ impl BuildInfo {
             for include_path in &dependency.include_paths {
                 println!("cargo:include={}", include_path);
             }
+
+            println!("cargo:rerun-if-env-changed=CONAN");
         }
     }
 }
 
 #[test]
 fn test_conan_build_info() {
-    let build_info = BuildInfo::from_str(include_str!("../test/conanbuildinfo.json")).unwrap();
+    let build_info = BuildInfo::from_str(include_str!("../test/conanbuildinfo1.json")).unwrap();
 
     let openssl = build_info.get_dependency("openssl").unwrap();
     assert_eq!(openssl.get_binary_dir(), None);
@@ -288,11 +291,19 @@ fn test_conan_build_info() {
     assert_eq!(settings.compiler_version, "4.8");
     assert_eq!(settings.os, "Linux");
     assert_eq!(settings.os_build, "Linux");
+
+    let build_info = BuildInfo::from_str(include_str!("../test/conanbuildinfo2.json")).unwrap();
+
+    let curl = build_info.get_dependency("curl").unwrap();
+    assert_eq!(curl.version, "7.58.0");
+
+    let mbedtls = build_info.get_dependency("mbedtls").unwrap();
+    assert_eq!(mbedtls.libs, ["mbedtls", "mbedcrypto", "mbedx509"]);
 }
 
 #[test]
 fn test_cargo_build_info() {
-    let build_info = BuildInfo::from_str(include_str!("../test/conanbuildinfo.json")).unwrap();
+    let build_info = BuildInfo::from_str(include_str!("../test/conanbuildinfo1.json")).unwrap();
     build_info.cargo_emit();
 }
 
@@ -423,7 +434,10 @@ impl<'a> InstallCommand<'a> {
     pub fn args(&self) -> Vec<String> {
         let mut args: Vec<&str> = Vec::new();
         let mut settings: IndexMap<&str, &str> = IndexMap::new();
+        let mut settings_kv: Vec<String> = Vec::new();
+        let output_dir = self.output_dir();
 
+        args.push("install");
         args.extend(&["-g", "json"]);
 
         if let Some(profile) = &self.profile {
@@ -451,13 +465,19 @@ impl<'a> InstallCommand<'a> {
             settings.insert("build_type", build_type.as_str());
         }
 
-        if let Some(output_dir) = &self.output_dir {
-            args.extend(&["-if", output_dir.to_str().unwrap()]);
+        if let Some(output_dir) = &output_dir {
+            let current_dir = env::current_dir().unwrap().to_path_buf();
+            if output_dir != &current_dir {
+                args.extend(&["-if", output_dir.to_str().unwrap()]);
+            }
         }
 
         for (key, val) in settings.iter() {
-            args.push(key);
-            args.push(val);
+            settings_kv.push(format!("{}={}", key, val));
+        }
+
+        for kv in settings_kv.iter() {
+            args.extend(&["-s", kv])
         }
 
         if let Some(recipe_path) = &self.recipe_path {
@@ -479,9 +499,9 @@ impl<'a> InstallCommand<'a> {
     }
 
     pub fn output_file(&self) -> Option<PathBuf> {
-        let mut output_dir = self.output_dir()?;
-        output_dir.push("conanbuildinfo.json");
-        Some(output_dir)
+        let mut output_file = self.output_dir()?;
+        output_file.push("conanbuildinfo.json");
+        Some(output_file)
     }
 
     pub fn generate(&self) -> Option<BuildInfo> {
@@ -489,7 +509,7 @@ impl<'a> InstallCommand<'a> {
         let program = find_program()?;
         let output_file = self.output_file()?;
         let mut command = Command::new(program);
-        if let Ok(_) = command.args(args).spawn() {
+        if let Ok(_) = command.args(args).status() {
             BuildInfo::from_file(output_file.as_path())
         } else {
             None
@@ -504,5 +524,5 @@ fn test_install_builder() {
         .build_type(BuildType::Release)
         .build_policy(BuildPolicy::Missing)
         .build();
-    assert_eq!(command.args(), ["-g", "json", "-pr", "linux-x86_64", "-b", "missing", "build_type", "Release"]);
+    assert_eq!(command.args(), ["install", "-g", "json", "-pr", "linux-x86_64", "-b", "missing", "-s", "build_type=Release"]);
 }

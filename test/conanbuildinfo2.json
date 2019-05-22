@@ -1,0 +1,79 @@
+{
+  "deps_env_info": {},
+  "deps_user_info": {
+    "curl": {},
+    "mbedtls": {}
+  },
+  "dependencies": [
+    {
+      "version": "7.58.0",
+      "description": "An open source, portable, easy to use, readable and flexible SSL library",
+      "rootpath": "/home/awake/.conan/data/curl/7.58.0/devolutions/stable/package/6d50802fb93e3f17a5a273d736f7668422d5d7e1",
+      "sysroot": "",
+      "include_paths": [
+        "/home/awake/.conan/data/curl/7.58.0/devolutions/stable/package/6d50802fb93e3f17a5a273d736f7668422d5d7e1/include"
+      ],
+      "lib_paths": [
+        "/home/awake/.conan/data/curl/7.58.0/devolutions/stable/package/6d50802fb93e3f17a5a273d736f7668422d5d7e1/lib"
+      ],
+      "bin_paths": [],
+      "build_paths": [
+        "/home/awake/.conan/data/curl/7.58.0/devolutions/stable/package/6d50802fb93e3f17a5a273d736f7668422d5d7e1/"
+      ],
+      "res_paths": [],
+      "libs": [
+        "curl"
+      ],
+      "defines": [],
+      "cflags": [],
+      "cxxflags": [],
+      "sharedlinkflags": [],
+      "exelinkflags": [],
+      "cppflags": [],
+      "name": "curl"
+    },
+    {
+      "version": "2.4.1",
+      "description": "An open source, portable, easy to use, readable and flexible SSL library",
+      "rootpath": "/home/awake/.conan/data/mbedtls/2.4.1/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6",
+      "sysroot": "",
+      "include_paths": [
+        "/home/awake/.conan/data/mbedtls/2.4.1/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6/include"
+      ],
+      "lib_paths": [
+        "/home/awake/.conan/data/mbedtls/2.4.1/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6/lib"
+      ],
+      "bin_paths": [],
+      "build_paths": [
+        "/home/awake/.conan/data/mbedtls/2.4.1/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6/"
+      ],
+      "res_paths": [],
+      "libs": [
+        "mbedtls",
+        "mbedcrypto",
+        "mbedx509"
+      ],
+      "defines": [],
+      "cflags": [],
+      "cxxflags": [],
+      "sharedlinkflags": [],
+      "exelinkflags": [],
+      "cppflags": [],
+      "name": "mbedtls"
+    }
+  ],
+  "settings": {
+    "arch": "x86_64",
+    "arch_build": "x86_64",
+    "build_type": "Release",
+    "compiler": "gcc",
+    "compiler.libcxx": "libstdc++",
+    "compiler.version": "4.8",
+    "os": "Linux",
+    "os_build": "Linux"
+  },
+  "options": {
+    "curl": {},
+    "mbedtls": {}
+  }
+}
