@@ -215,16 +215,16 @@ impl BuildDependency {
 
 #[derive(Serialize, Deserialize)]
 pub struct BuildSettings {
-    arch: String,
-    arch_build: String,
-    build_type: String,
-    compiler: String,
+    arch: Option<String>,
+    arch_build: Option<String>,
+    build_type: Option<String>,
+    compiler: Option<String>,
     #[serde(rename = "compiler.libcxx")]
-    compiler_libcxx: String,
+    compiler_libcxx: Option<String>,
     #[serde(rename = "compiler.version")]
-    compiler_version: String,
-    os: String,
-    os_build: String,
+    compiler_version: Option<String>,
+    os: Option<String>,
+    os_build: Option<String>,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -283,14 +283,14 @@ fn test_conan_build_info() {
     assert_eq!(openssl_inc_dir, "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6/include");
 
     let settings = build_info.settings;
-    assert_eq!(settings.arch, "x86_64");
-    assert_eq!(settings.arch_build, "x86_64");
-    assert_eq!(settings.build_type, "Release");
-    assert_eq!(settings.compiler, "gcc");
-    assert_eq!(settings.compiler_libcxx, "libstdc++");
-    assert_eq!(settings.compiler_version, "4.8");
-    assert_eq!(settings.os, "Linux");
-    assert_eq!(settings.os_build, "Linux");
+    assert_eq!(settings.arch, Some("x86_64".to_string()));
+    assert_eq!(settings.arch_build, Some("x86_64".to_string()));
+    assert_eq!(settings.build_type, Some("Release".to_string()));
+    assert_eq!(settings.compiler, Some("gcc".to_string()));
+    assert_eq!(settings.compiler_libcxx, Some("libstdc++".to_string()));
+    assert_eq!(settings.compiler_version, Some("4.8".to_string()));
+    assert_eq!(settings.os, Some("Linux".to_string()));
+    assert_eq!(settings.os_build, Some("Linux".to_string()));
 
     let build_info = BuildInfo::from_str(include_str!("../test/conanbuildinfo2.json")).unwrap();
 
@@ -299,6 +299,11 @@ fn test_conan_build_info() {
 
     let mbedtls = build_info.get_dependency("mbedtls").unwrap();
     assert_eq!(mbedtls.libs, ["mbedtls", "mbedcrypto", "mbedx509"]);
+
+    let build_info = BuildInfo::from_str(include_str!("../test/conanbuildinfo3.json")).unwrap();
+    let settings = build_info.settings;
+
+    assert_eq!(settings.compiler, Some("Visual Studio".to_string()));
 }
 
 #[test]

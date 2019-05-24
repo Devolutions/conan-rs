@@ -1,0 +1,80 @@
+{
+  "deps_env_info": {},
+  "deps_user_info": {
+    "curl": {},
+    "mbedtls": {}
+  },
+  "dependencies": [
+    {
+      "version": "7.58.0",
+      "description": "An open source, portable, easy to use, readable and flexible SSL library",
+      "rootpath": "C:\\Users\\Administrator\\.conan\\data\\curl\\7.58.0\\devolutions\\stable\\package\\dd7f174cf517f55a3df023a7c0d0636bb8248008",
+      "sysroot": "",
+      "include_paths": [
+        "C:\\Users\\Administrator\\.conan\\data\\curl\\7.58.0\\devolutions\\stable\\package\\dd7f174cf517f55a3df023a7c0d0636bb8248008\\include"
+      ],
+      "lib_paths": [
+        "C:\\Users\\Administrator\\.conan\\data\\curl\\7.58.0\\devolutions\\stable\\package\\dd7f174cf517f55a3df023a7c0d0636bb8248008\\lib"
+      ],
+      "bin_paths": [],
+      "build_paths": [
+        "C:\\Users\\Administrator\\.conan\\data\\curl\\7.58.0\\devolutions\\stable\\package\\dd7f174cf517f55a3df023a7c0d0636bb8248008\\"
+      ],
+      "res_paths": [],
+      "libs": [
+        "libcurl",
+        "ncrypt"
+      ],
+      "defines": [],
+      "cflags": [],
+      "cxxflags": [],
+      "sharedlinkflags": [],
+      "exelinkflags": [],
+      "cppflags": [],
+      "name": "curl"
+    },
+    {
+      "version": "2.4.1",
+      "description": "An open source, portable, easy to use, readable and flexible SSL library",
+      "rootpath": "C:\\Users\\Administrator\\.conan\\data\\mbedtls\\2.4.1\\devolutions\\stable\\package\\df81ad20137149d7a51276fd3e24009b45e5964a",
+      "sysroot": "",
+      "include_paths": [
+        "C:\\Users\\Administrator\\.conan\\data\\mbedtls\\2.4.1\\devolutions\\stable\\package\\df81ad20137149d7a51276fd3e24009b45e5964a\\include"
+      ],
+      "lib_paths": [
+        "C:\\Users\\Administrator\\.conan\\data\\mbedtls\\2.4.1\\devolutions\\stable\\package\\df81ad20137149d7a51276fd3e24009b45e5964a\\lib"
+      ],
+      "bin_paths": [],
+      "build_paths": [
+        "C:\\Users\\Administrator\\.conan\\data\\mbedtls\\2.4.1\\devolutions\\stable\\package\\df81ad20137149d7a51276fd3e24009b45e5964a\\"
+      ],
+      "res_paths": [],
+      "libs": [
+        "mbedtls",
+        "mbedcrypto",
+        "mbedx509"
+      ],
+      "defines": [],
+      "cflags": [],
+      "cxxflags": [],
+      "sharedlinkflags": [],
+      "exelinkflags": [],
+      "cppflags": [],
+      "name": "mbedtls"
+    }
+  ],
+  "settings": {
+    "arch": "x86_64",
+    "arch_build": "x86_64",
+    "build_type": "Release",
+    "compiler": "Visual Studio",
+    "compiler.runtime": "MT",
+    "compiler.version": "14",
+    "os": "Windows",
+    "os_build": "Windows"
+  },
+  "options": {
+    "curl": {},
+    "mbedtls": {}
+  }
+}
