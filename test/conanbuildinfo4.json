@@ -1,0 +1,79 @@
+{
+  "deps_env_info": {},
+  "deps_user_info": {
+    "curl": {},
+    "mbedtls": {}
+  },
+  "dependencies": [
+    {
+      "version": "7.58.0",
+      "description": "An open source, portable, easy to use, readable and flexible SSL library",
+      "rootpath": "/Users/mamoreau/.conan/data/curl/7.58.0/devolutions/stable/package/f79b7367d54a0af59003d63281f21f5c4c5c9a83",
+      "sysroot": "",
+      "include_paths": [
+        "/Users/mamoreau/.conan/data/curl/7.58.0/devolutions/stable/package/f79b7367d54a0af59003d63281f21f5c4c5c9a83/include"
+      ],
+      "lib_paths": [
+        "/Users/mamoreau/.conan/data/curl/7.58.0/devolutions/stable/package/f79b7367d54a0af59003d63281f21f5c4c5c9a83/lib"
+      ],
+      "bin_paths": [],
+      "build_paths": [
+        "/Users/mamoreau/.conan/data/curl/7.58.0/devolutions/stable/package/f79b7367d54a0af59003d63281f21f5c4c5c9a83/"
+      ],
+      "res_paths": [],
+      "libs": [
+        "curl"
+      ],
+      "defines": [],
+      "cflags": [],
+      "cppflags": [],
+      "sharedlinkflags": [],
+      "exelinkflags": [],
+      "name": "curl"
+    },
+    {
+      "version": "2.4.1",
+      "description": "An open source, portable, easy to use, readable and flexible SSL library",
+      "rootpath": "/Users/mamoreau/.conan/data/mbedtls/2.4.1/devolutions/stable/package/d08730c03d74fe9275d8668c8ea31e5963dce87a",
+      "sysroot": "",
+      "include_paths": [
+        "/Users/mamoreau/.conan/data/mbedtls/2.4.1/devolutions/stable/package/d08730c03d74fe9275d8668c8ea31e5963dce87a/include"
+      ],
+      "lib_paths": [
+        "/Users/mamoreau/.conan/data/mbedtls/2.4.1/devolutions/stable/package/d08730c03d74fe9275d8668c8ea31e5963dce87a/lib"
+      ],
+      "bin_paths": [],
+      "build_paths": [
+        "/Users/mamoreau/.conan/data/mbedtls/2.4.1/devolutions/stable/package/d08730c03d74fe9275d8668c8ea31e5963dce87a/"
+      ],
+      "res_paths": [],
+      "libs": [
+        "mbedtls",
+        "mbedcrypto",
+        "mbedx509"
+      ],
+      "defines": [],
+      "cflags": [],
+      "cppflags": [],
+      "sharedlinkflags": [],
+      "exelinkflags": [],
+      "name": "mbedtls"
+    }
+  ],
+  "settings": {
+    "arch": "x86_64",
+    "arch_build": "x86_64",
+    "build_type": "Release",
+    "compiler": "clang",
+    "compiler.libcxx": "libstdc++",
+    "compiler.version": "3.8",
+    "os": "Android",
+    "os.api_level": "21",
+    "os_build": "Linux"
+  },
+  "options": {
+    "curl": {},
+    "mbedtls": {}
+  }
+}
+

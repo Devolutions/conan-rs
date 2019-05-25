@@ -188,10 +188,10 @@ pub struct BuildDependency {
     libs: Vec<String>,
     defines: Vec<String>,
     cflags: Vec<String>,
-    cxxflags: Vec<String>,
+    cxxflags: Option<Vec<String>>,
     sharedlinkflags: Vec<String>,
     exelinkflags: Vec<String>,
-    cppflags: Vec<String>,
+    cppflags: Option<Vec<String>>,
     name: String,
 }
 
@@ -235,7 +235,12 @@ pub struct BuildInfo {
 
 impl BuildInfo {
     pub fn from_str(json: &str) -> Option<Self> {
-        serde_json::from_str(&json).ok()
+        let result = serde_json::from_str(&json);
+        if let Err(error) = result {
+            eprintln!("failed to parse conan build info: {:?}", error);
+            return None;
+        }
+        result.ok()
     }
 
     pub fn from_file(path: &Path) -> Option<Self> {
@@ -304,6 +309,11 @@ fn test_conan_build_info() {
     let settings = build_info.settings;
 
     assert_eq!(settings.compiler, Some("Visual Studio".to_string()));
+
+    let build_info = BuildInfo::from_str(include_str!("../test/conanbuildinfo4.json")).unwrap();
+    let settings = build_info.settings;
+
+    assert_eq!(settings.compiler, Some("clang".to_string()));
 }
 
 #[test]
