@@ -1,3 +1,4 @@
+#![allow(unused_doc_comments)]
 
 extern crate regex;
 extern crate which;
