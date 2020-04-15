@@ -178,7 +178,7 @@ fn test_conan_remote_list() {
 #[derive(Serialize, Deserialize)]
 pub struct BuildDependency {
     version: String,
-    description: String,
+    description: Option<String>,
     rootpath: String,
     sysroot: String,
     include_paths: Vec<String>,
