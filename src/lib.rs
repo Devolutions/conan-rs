@@ -1,8 +1,8 @@
 #![allow(unused_doc_comments)]
 
+extern crate indexmap;
 extern crate regex;
 extern crate which;
-extern crate indexmap;
 
 extern crate serde;
 extern crate serde_json;
@@ -13,15 +13,15 @@ extern crate lazy_static;
 // conan.cmake wrapper reference
 // https://github.com/conan-io/cmake-conan/blob/develop/conan.cmake
 
-use std::fmt;
 use std::env;
+use std::fmt;
 use std::fs::File;
 use std::path::{Path, PathBuf};
-use std::process::{Command};
+use std::process::Command;
 
-use regex::Regex;
 use indexmap::IndexMap;
-use serde::{Serialize, Deserialize};
+use regex::Regex;
+use serde::{Deserialize, Serialize};
 
 /**
  * conan detection
@@ -42,9 +42,7 @@ pub fn find_version() -> Option<String> {
     let conan_program = find_program()?;
     let conan_program = conan_program.as_path().to_str().unwrap().to_string();
 
-    let output = Command::new(&conan_program)
-        .arg("--version")
-        .output();
+    let output = Command::new(&conan_program).arg("--version").output();
 
     // $ conan --version
     // Conan version 1.14.3
@@ -157,7 +155,7 @@ pub fn get_remote_list() -> Vec<Remote> {
         let captures = REGEX_CONAN_REMOTE.captures(line.trim()).unwrap();
         let remote = Remote {
             name: captures[1].to_string(),
-            url: captures[2].to_string()
+            url: captures[2].to_string(),
         };
         list.push(remote);
     }
@@ -279,7 +277,6 @@ impl BuildInfo {
     }
 }
 
-
 #[test]
 fn test_conan_build_info() {
     let build_info = BuildInfo::from_str(include_str!("../test/conanbuildinfo1.json")).unwrap();
@@ -289,7 +286,10 @@ fn test_conan_build_info() {
     let openssl_dir = openssl.get_root_dir().unwrap();
     let openssl_lib_dir = openssl.get_library_dir().unwrap();
     let openssl_inc_dir = openssl.get_include_dir().unwrap();
-    assert_eq!(openssl_dir, "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6");
+    assert_eq!(
+        openssl_dir,
+        "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6"
+    );
     assert_eq!(openssl_lib_dir, "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6/lib");
     assert_eq!(openssl_inc_dir, "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6/include");
 
@@ -339,7 +339,7 @@ fn test_cargo_build_info() {
     build_info.cargo_emit();
 }
 
-#[derive(Clone,PartialEq)]
+#[derive(Clone, PartialEq)]
 pub enum BuildType {
     None,
     Debug,
@@ -360,7 +360,7 @@ impl BuildType {
     }
 }
 
-#[derive(Clone,PartialEq)]
+#[derive(Clone, PartialEq)]
 pub enum BuildPolicy {
     Never,
     Always,
@@ -444,7 +444,7 @@ impl<'a> InstallCommandBuilder<'a> {
                 "debug" => Some(BuildType::Debug),
                 "release" => Some(BuildType::Release),
                 _ => None,
-            }
+            };
         }
         None
     }
@@ -486,10 +486,18 @@ impl<'a> InstallCommand<'a> {
 
         if let Some(build_policy) = &self.build_policy {
             match build_policy {
-                BuildPolicy::Never => { args.extend(&["-b", "never"]); },
-                BuildPolicy::Always => { args.extend(&["-b"]); },
-                BuildPolicy::Missing => { args.extend(&["-b", "missing"]); },
-                BuildPolicy::Outdated => { args.extend(&["-b", "outdated"]); },
+                BuildPolicy::Never => {
+                    args.extend(&["-b", "never"]);
+                }
+                BuildPolicy::Always => {
+                    args.extend(&["-b"]);
+                }
+                BuildPolicy::Missing => {
+                    args.extend(&["-b", "missing"]);
+                }
+                BuildPolicy::Outdated => {
+                    args.extend(&["-b", "outdated"]);
+                }
             }
         }
 
@@ -556,5 +564,18 @@ fn test_install_builder() {
         .build_type(BuildType::Release)
         .build_policy(BuildPolicy::Missing)
         .build();
-    assert_eq!(command.args(), ["install", "-g", "json", "-pr", "linux-x86_64", "-b", "missing", "-s", "build_type=Release"]);
+    assert_eq!(
+        command.args(),
+        [
+            "install",
+            "-g",
+            "json",
+            "-pr",
+            "linux-x86_64",
+            "-b",
+            "missing",
+            "-s",
+            "build_type=Release"
+        ]
+    );
 }
