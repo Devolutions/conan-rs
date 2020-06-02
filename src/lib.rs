@@ -256,6 +256,10 @@ impl BuildInfo {
         self.dependencies.iter().find(|&x| x.name == name)
     }
 
+    pub fn dependencies(&self) -> &Vec<BuildDependency> {
+        &self.dependencies
+    }
+
     pub fn cargo_emit(&self) {
         for dependency in &self.dependencies {
             for lib_path in &dependency.lib_paths {
@@ -275,6 +279,7 @@ impl BuildInfo {
     }
 }
 
+
 #[test]
 fn test_conan_build_info() {
     let build_info = BuildInfo::from_str(include_str!("../test/conanbuildinfo1.json")).unwrap();
@@ -287,6 +292,9 @@ fn test_conan_build_info() {
     assert_eq!(openssl_dir, "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6");
     assert_eq!(openssl_lib_dir, "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6/lib");
     assert_eq!(openssl_inc_dir, "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6/include");
+
+    let dependencies = build_info.dependencies();
+    assert_eq!(dependencies.len(), 1);
 
     let settings = build_info.settings;
     assert_eq!(settings.arch, Some("x86_64".to_string()));
@@ -306,14 +314,22 @@ fn test_conan_build_info() {
     let mbedtls = build_info.get_dependency("mbedtls").unwrap();
     assert_eq!(mbedtls.libs, ["mbedtls", "mbedcrypto", "mbedx509"]);
 
-    let build_info = BuildInfo::from_str(include_str!("../test/conanbuildinfo3.json")).unwrap();
-    let settings = build_info.settings;
+    let dependencies = build_info.dependencies();
+    assert_eq!(dependencies.len(), 2);
 
+    let build_info = BuildInfo::from_str(include_str!("../test/conanbuildinfo3.json")).unwrap();
+
+    let dependencies = build_info.dependencies();
+    assert_eq!(dependencies.len(), 2);
+
+    let settings = build_info.settings;
     assert_eq!(settings.compiler, Some("Visual Studio".to_string()));
 
     let build_info = BuildInfo::from_str(include_str!("../test/conanbuildinfo4.json")).unwrap();
-    let settings = build_info.settings;
+    let dependencies = build_info.dependencies();
+    assert_eq!(dependencies.len(), 2);
 
+    let settings = build_info.settings;
     assert_eq!(settings.compiler, Some("clang".to_string()));
 }
 
