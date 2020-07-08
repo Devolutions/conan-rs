@@ -21,7 +21,8 @@ use std::process::Command;
 
 use indexmap::IndexMap;
 use regex::Regex;
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize, Deserializer};
+use serde::de::{Visitor, SeqAccess};
 
 /**
  * conan detection
@@ -173,9 +174,47 @@ fn test_conan_remote_list() {
 
 // conan build info
 
+fn deserialize_optional_string_or_string_vec<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
+    where D: Deserializer<'de>
+{
+    struct JsonStringOrStringVecVisitor;
+
+    impl<'de> Visitor<'de> for JsonStringOrStringVecVisitor {
+        type Value = Option<String>;
+
+        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("null, a string, or an array of strings")
+        }
+
+        fn visit_str<E>(self, v: &str) -> Result<Self::Value, E> {
+            Ok(Some(v.to_owned()))
+        }
+
+        fn visit_none<E>(self) -> Result<Self::Value, E> {
+            Ok(None)
+        }
+
+        fn visit_some<D: Deserializer<'de>>(self, deserializer: D) -> Result<Self::Value, D::Error> {
+            deserializer.deserialize_any(JsonStringOrStringVecVisitor)
+        }
+
+        fn visit_seq<A: SeqAccess<'de>>(self, mut seq: A) -> Result<Self::Value, A::Error> {
+           let mut concatenated = String::new();
+           while let Some(elem) = seq.next_element::<String>()? {
+                concatenated += &elem;
+           }
+
+            Ok(Some(concatenated))
+        }
+    }
+
+    deserializer.deserialize_option(JsonStringOrStringVecVisitor)
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct BuildDependency {
     version: String,
+    #[serde(deserialize_with = "deserialize_optional_string_or_string_vec")]
     description: Option<String>,
     rootpath: String,
     sysroot: String,
