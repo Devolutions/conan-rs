@@ -265,6 +265,105 @@ pub struct BuildSettings {
     os_build: Option<String>,
 }
 
+impl BuildSettings {
+    pub fn new() -> Self{
+        Self {
+            arch: None,
+            arch_build: None,
+            build_type: None,
+            compiler: None,
+            compiler_libcxx: None,
+            compiler_version: None,
+            os: None,
+            os_build: None,
+        }
+    }
+
+    pub fn args(&self) -> Vec<String> {
+        let mut args: Vec<String> = Vec::new();
+        let mut settings = Vec::new();
+
+        if let Some(arch) = &self.arch {
+            settings.push(format!("{}={}", "arch", arch));
+        }
+
+        if let Some(arch_build) = &self.arch_build {
+            settings.push(format!("{}={}", "arch_build", arch_build));
+        }
+
+        if let Some(build_type) = &self.build_type {
+            settings.push(format!("{}={}", "build_type", build_type));
+        }
+
+        if let Some(compiler) = &self.compiler {
+            settings.push(format!("{}={}", "compiler", compiler));
+        }
+
+        if let Some(compiler_libcxx) = &self.compiler_libcxx {
+            settings.push(format!("{}={}", "compiler.libcxx", compiler_libcxx));
+        }
+
+        if let Some(compiler_version) = &self.compiler_version {
+            settings.push(format!("{}={}", "compiler.version", compiler_version));
+        }
+
+        if let Some(os) = &self.os {
+            settings.push(format!("{}={}", "os", os));
+        }
+
+        if let Some(os_build) = &self.os_build {
+            settings.push(format!("{}={}", "os_build", os_build));
+        }
+
+        for el in settings {
+            args.extend(["-s".to_string(), el]);
+        }
+
+        args
+    }
+
+    pub fn arch(mut self, arch: String) -> Self {
+        self.arch = Some(arch);
+        self
+    }
+
+    pub fn arch_build(mut self, arch_build: String) -> Self {
+        self.arch_build = Some(arch_build);
+        self
+    }
+
+    pub fn build_type<T: ToString>(mut self, build_type: T) -> Self {
+        self.build_type = Some(build_type.to_string());
+        self
+    }
+
+    pub fn compiler(mut self, compiler: String) -> Self {
+        self.compiler = Some(compiler);
+        self
+    }
+
+    pub fn compiler_libcxx(mut self, compiler_libcxx: String) -> Self {
+        self.compiler_libcxx = Some(compiler_libcxx);
+        self
+    }
+
+    pub fn compiler_version(mut self, compiler_version: String) -> Self {
+        self.compiler_version = Some(compiler_version);
+        self
+    }
+
+    pub fn os(mut self, os: String) -> Self {
+        self.os = Some(os);
+        self
+    }
+
+    pub fn os_build(mut self, os_build: String) -> Self {
+        self.os_build = Some(os_build);
+        self
+    }
+}
+
+
 #[derive(Serialize, Deserialize)]
 pub struct BuildInfo {
     dependencies: Vec<BuildDependency>,
@@ -387,6 +486,13 @@ pub enum BuildType {
     MinSizeRel,
 }
 
+impl ToString for BuildType {
+    fn to_string(&self) -> String {
+        self.as_str().to_string()
+    }
+}
+
+
 impl BuildType {
     pub fn as_str(&self) -> &str {
         match self {
@@ -410,7 +516,7 @@ pub enum BuildPolicy {
 pub struct InstallCommand<'a> {
     profile: Option<&'a str>,
     remote: Option<&'a str>,
-    build_type: Option<BuildType>,
+    build_settings: Option<BuildSettings>,
     build_policy: Option<BuildPolicy>,
     recipe_path: Option<PathBuf>,
     output_dir: Option<PathBuf>,
@@ -420,7 +526,7 @@ pub struct InstallCommand<'a> {
 pub struct InstallCommandBuilder<'a> {
     profile: Option<&'a str>,
     remote: Option<&'a str>,
-    build_type: Option<BuildType>,
+    build_settings: Option<BuildSettings>,
     build_policy: Option<BuildPolicy>,
     recipe_path: Option<PathBuf>,
     output_dir: Option<PathBuf>,
@@ -432,7 +538,7 @@ impl<'a> InstallCommandBuilder<'a> {
         InstallCommandBuilder {
             profile: None,
             remote: None,
-            build_type: None,
+            build_settings: None,
             build_policy: None,
             recipe_path: None,
             output_dir: None,
@@ -450,8 +556,8 @@ impl<'a> InstallCommandBuilder<'a> {
         self
     }
 
-    pub fn build_type(mut self, build_type: BuildType) -> Self {
-        self.build_type = Some(build_type);
+    pub fn build_settings(mut self, build_settings: BuildSettings) -> Self {
+        self.build_settings = Some(build_settings);
         self
     }
 
@@ -475,24 +581,24 @@ impl<'a> InstallCommandBuilder<'a> {
         self
     }
 
-    fn detect_build_type(&self) -> Option<BuildType> {
-        if self.build_type.is_some() {
-            return self.build_type.clone();
-        } else if let Ok(profile) = env::var("PROFILE") {
-            return match profile.as_str() {
-                "debug" => Some(BuildType::Debug),
-                "release" => Some(BuildType::Release),
-                _ => None,
-            };
-        }
-        None
-    }
+    // fn detect_build_type(&self) -> Option<BuildType> {
+    //     if self.build_type.is_some() {
+    //         return self.build_type.clone();
+    //     } else if let Ok(profile) = env::var("PROFILE") {
+    //         return match profile.as_str() {
+    //             "debug" => Some(BuildType::Debug),
+    //             "release" => Some(BuildType::Release),
+    //             _ => None,
+    //         };
+    //     }
+    //     None
+    // }
 
     pub fn build(self) -> InstallCommand<'a> {
         InstallCommand {
             profile: self.profile,
             remote: self.remote,
-            build_type: self.detect_build_type(),
+            build_settings: self.build_settings,
             build_policy: self.build_policy,
             recipe_path: self.recipe_path,
             output_dir: self.output_dir,
@@ -504,7 +610,6 @@ impl<'a> InstallCommandBuilder<'a> {
 impl<'a> InstallCommand<'a> {
     pub fn args(&self) -> Vec<String> {
         let mut args: Vec<&str> = Vec::new();
-        let mut settings: IndexMap<&str, &str> = IndexMap::new();
         let mut settings_kv: Vec<String> = Vec::new();
         let output_dir = self.output_dir();
 
@@ -540,10 +645,6 @@ impl<'a> InstallCommand<'a> {
             }
         }
 
-        if let Some(build_type) = &self.build_type {
-            settings.insert("build_type", build_type.as_str());
-        }
-
         if let Some(output_dir) = &output_dir {
             let current_dir = env::current_dir().unwrap().to_path_buf();
             if output_dir != &current_dir {
@@ -551,8 +652,8 @@ impl<'a> InstallCommand<'a> {
             }
         }
 
-        for (key, val) in settings.iter() {
-            settings_kv.push(format!("{}={}", key, val));
+        if let Some(build_settings) = &self.build_settings {
+            settings_kv.extend(build_settings.args());
         }
 
         for kv in settings_kv.iter() {
