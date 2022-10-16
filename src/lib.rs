@@ -1,6 +1,7 @@
 #![allow(unused_doc_comments)]
 
-extern crate indexmap;
+pub mod build_info;
+
 extern crate regex;
 extern crate which;
 
@@ -15,14 +16,12 @@ extern crate lazy_static;
 
 use std::env;
 use std::fmt;
-use std::fs::File;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use indexmap::IndexMap;
 use regex::Regex;
-use serde::{Deserialize, Serialize, Deserializer};
-use serde::de::{Visitor, SeqAccess};
+
+use build_info::{build_settings::BuildSettings, BuildInfo};
 
 /**
  * conan detection
@@ -172,339 +171,6 @@ fn test_conan_remote_list() {
     }
 }
 
-// conan build info
-
-fn deserialize_optional_string_or_string_vec<'de, D>(deserializer: D) -> Result<Option<String>, D::Error>
-    where D: Deserializer<'de>
-{
-    struct JsonStringOrStringVecVisitor;
-
-    impl<'de> Visitor<'de> for JsonStringOrStringVecVisitor {
-        type Value = Option<String>;
-
-        fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-            formatter.write_str("null, a string, or an array of strings")
-        }
-
-        fn visit_str<E>(self, v: &str) -> Result<Self::Value, E> {
-            Ok(Some(v.to_owned()))
-        }
-
-        fn visit_none<E>(self) -> Result<Self::Value, E> {
-            Ok(None)
-        }
-
-        fn visit_some<D: Deserializer<'de>>(self, deserializer: D) -> Result<Self::Value, D::Error> {
-            deserializer.deserialize_any(JsonStringOrStringVecVisitor)
-        }
-
-        fn visit_seq<A: SeqAccess<'de>>(self, mut seq: A) -> Result<Self::Value, A::Error> {
-           let mut concatenated = String::new();
-           while let Some(elem) = seq.next_element::<String>()? {
-                concatenated += &elem;
-           }
-
-            Ok(Some(concatenated))
-        }
-    }
-
-    deserializer.deserialize_option(JsonStringOrStringVecVisitor)
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct BuildDependency {
-    version: String,
-    #[serde(deserialize_with = "deserialize_optional_string_or_string_vec")]
-    description: Option<String>,
-    rootpath: String,
-    sysroot: String,
-    include_paths: Vec<String>,
-    lib_paths: Vec<String>,
-    bin_paths: Vec<String>,
-    build_paths: Vec<String>,
-    res_paths: Vec<String>,
-    libs: Vec<String>,
-    defines: Vec<String>,
-    cflags: Vec<String>,
-    cxxflags: Option<Vec<String>>,
-    sharedlinkflags: Vec<String>,
-    exelinkflags: Vec<String>,
-    cppflags: Option<Vec<String>>,
-    name: String,
-}
-
-impl BuildDependency {
-    pub fn get_root_dir(&self) -> Option<&str> {
-        Some(self.rootpath.as_str())
-    }
-
-    pub fn get_library_dir(&self) -> Option<&str> {
-        self.lib_paths.get(0).map(|x| &**x)
-    }
-
-    pub fn get_include_dir(&self) -> Option<&str> {
-        self.include_paths.get(0).map(|x| &**x)
-    }
-
-    pub fn get_binary_dir(&self) -> Option<&str> {
-        self.bin_paths.get(0).map(|x| &**x)
-    }
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct BuildSettings {
-    arch: Option<String>,
-    arch_build: Option<String>,
-    build_type: Option<String>,
-    compiler: Option<String>,
-    #[serde(rename = "compiler.libcxx")]
-    compiler_libcxx: Option<String>,
-    #[serde(rename = "compiler.version")]
-    compiler_version: Option<String>,
-    os: Option<String>,
-    os_build: Option<String>,
-}
-
-impl BuildSettings {
-    pub fn new() -> Self{
-        Self {
-            arch: None,
-            arch_build: None,
-            build_type: None,
-            compiler: None,
-            compiler_libcxx: None,
-            compiler_version: None,
-            os: None,
-            os_build: None,
-        }
-    }
-
-    pub fn args(&self) -> Vec<String> {
-        let mut args: Vec<String> = Vec::new();
-        let mut settings = Vec::new();
-
-        if let Some(arch) = &self.arch {
-            settings.push(format!("{}={}", "arch", arch));
-        }
-
-        if let Some(arch_build) = &self.arch_build {
-            settings.push(format!("{}={}", "arch_build", arch_build));
-        }
-
-        if let Some(build_type) = &self.build_type {
-            settings.push(format!("{}={}", "build_type", build_type));
-        }
-
-        if let Some(compiler) = &self.compiler {
-            settings.push(format!("{}={}", "compiler", compiler));
-        }
-
-        if let Some(compiler_libcxx) = &self.compiler_libcxx {
-            settings.push(format!("{}={}", "compiler.libcxx", compiler_libcxx));
-        }
-
-        if let Some(compiler_version) = &self.compiler_version {
-            settings.push(format!("{}={}", "compiler.version", compiler_version));
-        }
-
-        if let Some(os) = &self.os {
-            settings.push(format!("{}={}", "os", os));
-        }
-
-        if let Some(os_build) = &self.os_build {
-            settings.push(format!("{}={}", "os_build", os_build));
-        }
-
-        for el in settings {
-            args.extend(["-s".to_string(), el]);
-        }
-
-        args
-    }
-
-    pub fn arch(mut self, arch: String) -> Self {
-        self.arch = Some(arch);
-        self
-    }
-
-    pub fn arch_build(mut self, arch_build: String) -> Self {
-        self.arch_build = Some(arch_build);
-        self
-    }
-
-    pub fn build_type<T: ToString>(mut self, build_type: T) -> Self {
-        self.build_type = Some(build_type.to_string());
-        self
-    }
-
-    pub fn compiler(mut self, compiler: String) -> Self {
-        self.compiler = Some(compiler);
-        self
-    }
-
-    pub fn compiler_libcxx(mut self, compiler_libcxx: String) -> Self {
-        self.compiler_libcxx = Some(compiler_libcxx);
-        self
-    }
-
-    pub fn compiler_version(mut self, compiler_version: String) -> Self {
-        self.compiler_version = Some(compiler_version);
-        self
-    }
-
-    pub fn os(mut self, os: String) -> Self {
-        self.os = Some(os);
-        self
-    }
-
-    pub fn os_build(mut self, os_build: String) -> Self {
-        self.os_build = Some(os_build);
-        self
-    }
-}
-
-
-#[derive(Serialize, Deserialize)]
-pub struct BuildInfo {
-    dependencies: Vec<BuildDependency>,
-    settings: BuildSettings,
-}
-
-impl BuildInfo {
-    pub fn from_str(json: &str) -> Option<Self> {
-        let result = serde_json::from_str(&json);
-        if let Err(error) = result {
-            eprintln!("failed to parse conan build info: {:?}", error);
-            return None;
-        }
-        result.ok()
-    }
-
-    pub fn from_file(path: &Path) -> Option<Self> {
-        if let Ok(json_file) = File::open(path) {
-            serde_json::from_reader(&json_file).ok()
-        } else {
-            None
-        }
-    }
-
-    pub fn get_dependency(&self, name: &str) -> Option<&BuildDependency> {
-        self.dependencies.iter().find(|&x| x.name == name)
-    }
-
-    pub fn dependencies(&self) -> &Vec<BuildDependency> {
-        &self.dependencies
-    }
-
-    pub fn cargo_emit(&self) {
-        for dependency in &self.dependencies {
-            for lib_path in &dependency.lib_paths {
-                println!("cargo:rustc-link-search=native={}", lib_path);
-            }
-
-            for lib in &dependency.libs {
-                println!("cargo:rustc-link-lib={}", lib);
-            }
-
-            for include_path in &dependency.include_paths {
-                println!("cargo:include={}", include_path);
-            }
-
-            println!("cargo:rerun-if-env-changed=CONAN");
-        }
-    }
-}
-
-#[test]
-fn test_conan_build_info() {
-    let build_info = BuildInfo::from_str(include_str!("../test/conanbuildinfo1.json")).unwrap();
-
-    let openssl = build_info.get_dependency("openssl").unwrap();
-    assert_eq!(openssl.get_binary_dir(), None);
-    let openssl_dir = openssl.get_root_dir().unwrap();
-    let openssl_lib_dir = openssl.get_library_dir().unwrap();
-    let openssl_inc_dir = openssl.get_include_dir().unwrap();
-    assert_eq!(
-        openssl_dir,
-        "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6"
-    );
-    assert_eq!(openssl_lib_dir, "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6/lib");
-    assert_eq!(openssl_inc_dir, "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6/include");
-
-    let dependencies = build_info.dependencies();
-    assert_eq!(dependencies.len(), 1);
-
-    let settings = build_info.settings;
-    assert_eq!(settings.arch, Some("x86_64".to_string()));
-    assert_eq!(settings.arch_build, Some("x86_64".to_string()));
-    assert_eq!(settings.build_type, Some("Release".to_string()));
-    assert_eq!(settings.compiler, Some("gcc".to_string()));
-    assert_eq!(settings.compiler_libcxx, Some("libstdc++".to_string()));
-    assert_eq!(settings.compiler_version, Some("4.8".to_string()));
-    assert_eq!(settings.os, Some("Linux".to_string()));
-    assert_eq!(settings.os_build, Some("Linux".to_string()));
-
-    let build_info = BuildInfo::from_str(include_str!("../test/conanbuildinfo2.json")).unwrap();
-
-    let curl = build_info.get_dependency("curl").unwrap();
-    assert_eq!(curl.version, "7.58.0");
-
-    let mbedtls = build_info.get_dependency("mbedtls").unwrap();
-    assert_eq!(mbedtls.libs, ["mbedtls", "mbedcrypto", "mbedx509"]);
-
-    let dependencies = build_info.dependencies();
-    assert_eq!(dependencies.len(), 2);
-
-    let build_info = BuildInfo::from_str(include_str!("../test/conanbuildinfo3.json")).unwrap();
-
-    let dependencies = build_info.dependencies();
-    assert_eq!(dependencies.len(), 2);
-
-    let settings = build_info.settings;
-    assert_eq!(settings.compiler, Some("Visual Studio".to_string()));
-
-    let build_info = BuildInfo::from_str(include_str!("../test/conanbuildinfo4.json")).unwrap();
-    let dependencies = build_info.dependencies();
-    assert_eq!(dependencies.len(), 2);
-
-    let settings = build_info.settings;
-    assert_eq!(settings.compiler, Some("clang".to_string()));
-}
-
-#[test]
-fn test_cargo_build_info() {
-    let build_info = BuildInfo::from_str(include_str!("../test/conanbuildinfo1.json")).unwrap();
-    build_info.cargo_emit();
-}
-
-#[derive(Clone, PartialEq)]
-pub enum BuildType {
-    None,
-    Debug,
-    Release,
-    RelWithDebInfo,
-    MinSizeRel,
-}
-
-impl ToString for BuildType {
-    fn to_string(&self) -> String {
-        self.as_str().to_string()
-    }
-}
-
-
-impl BuildType {
-    pub fn as_str(&self) -> &str {
-        match self {
-            &BuildType::None => "None",
-            &BuildType::Debug => "Debug",
-            &BuildType::Release => "Release",
-            &BuildType::RelWithDebInfo => "RelWithDebInfo",
-            &BuildType::MinSizeRel => "MinSizeRel",
-        }
-    }
-}
-
 #[derive(Clone, PartialEq)]
 pub enum BuildPolicy {
     Never,
@@ -580,19 +246,6 @@ impl<'a> InstallCommandBuilder<'a> {
         self.update_check = true;
         self
     }
-
-    // fn detect_build_type(&self) -> Option<BuildType> {
-    //     if self.build_type.is_some() {
-    //         return self.build_type.clone();
-    //     } else if let Ok(profile) = env::var("PROFILE") {
-    //         return match profile.as_str() {
-    //             "debug" => Some(BuildType::Debug),
-    //             "release" => Some(BuildType::Release),
-    //             _ => None,
-    //         };
-    //     }
-    //     None
-    // }
 
     pub fn build(self) -> InstallCommand<'a> {
         InstallCommand {
@@ -699,9 +352,12 @@ impl<'a> InstallCommand<'a> {
 
 #[test]
 fn test_install_builder() {
+    use build_info::build_settings::{BuildType};
+
+    let build_settings = BuildSettings::new().build_type(BuildType::Release);
     let command = InstallCommandBuilder::new()
         .with_profile("linux-x86_64")
-        .build_type(BuildType::Release)
+        .build_settings(build_settings)
         .build_policy(BuildPolicy::Missing)
         .build();
     assert_eq!(
