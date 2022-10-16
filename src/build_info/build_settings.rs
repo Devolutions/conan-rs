@@ -121,7 +121,8 @@ impl BuildSettings {
             return self.build_type.clone();
         } else if let Ok(profile) = env::var("PROFILE") {
             return match profile.as_str() {
-                "debug" | "release" => Some(profile),
+                "debug" => Some("Debug".into()),
+                "release" => Some("Release".into()),
                 _ => None,
             };
         }
