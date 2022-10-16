@@ -263,8 +263,6 @@ impl<'a> InstallCommandBuilder<'a> {
 impl<'a> InstallCommand<'a> {
     pub fn args(&self) -> Vec<String> {
         let mut args: Vec<&str> = Vec::new();
-        let mut settings_kv: Vec<String> = Vec::new();
-        let output_dir = self.output_dir();
 
         args.push("install");
         args.extend(&["-g", "json"]);
@@ -298,6 +296,7 @@ impl<'a> InstallCommand<'a> {
             }
         }
 
+        let output_dir = self.output_dir();
         if let Some(output_dir) = &output_dir {
             let current_dir = env::current_dir().unwrap().to_path_buf();
             if output_dir != &current_dir {
@@ -305,12 +304,10 @@ impl<'a> InstallCommand<'a> {
             }
         }
 
+        let settings;
         if let Some(build_settings) = &self.build_settings {
-            settings_kv.extend(build_settings.args());
-        }
-
-        for kv in settings_kv.iter() {
-            args.extend(&["-s", kv])
+            settings = build_settings.args();
+            args.extend(settings.iter().map(String::as_str));
         }
 
         if let Some(recipe_path) = &self.recipe_path {
