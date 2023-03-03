@@ -45,6 +45,12 @@ pub struct BuildSettings {
     pub(crate) os_build: Option<String>,
 }
 
+impl Default for BuildSettings {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl BuildSettings {
     pub fn new() -> Self {
         Self {
@@ -70,7 +76,7 @@ impl BuildSettings {
             settings.push(format!("{}={}", "arch_build", arch_build));
         }
 
-        if let Some(build_type) = self.detect_build_type() {
+        if let Some(build_type) = self.build_type.clone().or_else(|| self.detect_build_type()) {
             settings.push(format!("{}={}", "build_type", build_type));
         }
 
