@@ -182,7 +182,7 @@ pub enum BuildPolicy {
 pub struct InstallCommand<'a> {
     profile: Option<&'a str>,
     remote: Option<&'a str>,
-    build_settings: Option<BuildSettings>,
+    build_settings: BuildSettings,
     build_policy: Option<BuildPolicy>,
     recipe_path: Option<PathBuf>,
     output_dir: Option<PathBuf>,
@@ -251,7 +251,7 @@ impl<'a> InstallCommandBuilder<'a> {
         InstallCommand {
             profile: self.profile,
             remote: self.remote,
-            build_settings: self.build_settings,
+            build_settings: self.build_settings.unwrap_or_default(),
             build_policy: self.build_policy,
             recipe_path: self.recipe_path,
             output_dir: self.output_dir,
@@ -304,11 +304,8 @@ impl<'a> InstallCommand<'a> {
             }
         }
 
-        let settings;
-        if let Some(build_settings) = &self.build_settings {
-            settings = build_settings.args();
-            args.extend(settings.iter().map(String::as_str));
-        }
+        let build_settings_args = self.build_settings.args();
+        args.extend(build_settings_args.iter().map(String::as_str));
 
         if let Some(recipe_path) = &self.recipe_path {
             args.push(recipe_path.to_str().unwrap());
