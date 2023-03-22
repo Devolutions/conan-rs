@@ -55,6 +55,12 @@ impl BuildInfo {
                 println!("cargo:rustc-link-lib={}", lib);
             }
 
+            if let Some(syslibs) = &dependency.system_libs {
+                for syslib in syslibs {
+                    println!("cargo:rustc-link-lib={}", syslib);
+                }
+            }
+
             for include_path in &dependency.include_paths {
                 println!("cargo:include={}", include_path);
             }
@@ -121,7 +127,26 @@ fn test_conan_build_info() {
 }
 
 #[test]
+fn test_conan_build_info_syslibs() {
+    let build_info = BuildInfo::from_str(include_str!("../../test/conanbuildinfo5.json")).unwrap();
+    let dependencies = build_info.dependencies();
+    assert_eq!(dependencies.len(), 10);
+
+    let libsystemd = build_info.get_dependency("libsystemd").unwrap();
+    assert_eq!(libsystemd.libs, ["systemd"]);
+
+    let system_libs = libsystemd.system_libs.as_ref().unwrap().as_slice();
+    assert_eq!(system_libs, ["rt", "pthread", "dl"]);
+}
+
+#[test]
 fn test_cargo_build_info() {
     let build_info = BuildInfo::from_str(include_str!("../../test/conanbuildinfo1.json")).unwrap();
+    build_info.cargo_emit();
+}
+
+#[test]
+fn test_cargo_build_info_syslibs() {
+    let build_info = BuildInfo::from_str(include_str!("../../test/conanbuildinfo5.json")).unwrap();
     build_info.cargo_emit();
 }

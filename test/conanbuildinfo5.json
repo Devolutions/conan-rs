@@ -1,0 +1,447 @@
+{
+  "deps_env_info": {
+    "PATH": [
+      "/home/user/.conan/data/pcre2/10.42/_/_/package/7e82c9c8d32cbe0951c733288be673b1886fa50a/bin",
+      "/home/user/.conan/data/bzip2/1.0.8/_/_/package/ad18e1e856ff78d73ad6f3c9a214f85abf2d0550/bin"
+    ]
+  },
+  "deps_user_info": {
+    "libsystemd": {},
+    "libcap": {},
+    "libmount": {},
+    "libselinux": {},
+    "lz4": {},
+    "xz_utils": {},
+    "zstd": {},
+    "pcre2": {},
+    "zlib": {},
+    "bzip2": {}
+  },
+  "dependencies": [
+    {
+      "version": "252",
+      "description": "System and Service Manager API library",
+      "rootpath": "/home/user/.conan/data/libsystemd/252.4/_/_/package/ce0bd9004fa2d91408cafd7acc9ea3fde00c8ad1",
+      "sysroot": "",
+      "include_paths": [
+        "/home/user/.conan/data/libsystemd/252.4/_/_/package/ce0bd9004fa2d91408cafd7acc9ea3fde00c8ad1/include"
+      ],
+      "lib_paths": [
+        "/home/user/.conan/data/libsystemd/252.4/_/_/package/ce0bd9004fa2d91408cafd7acc9ea3fde00c8ad1/lib"
+      ],
+      "bin_paths": [],
+      "build_paths": [
+        "/home/user/.conan/data/libsystemd/252.4/_/_/package/ce0bd9004fa2d91408cafd7acc9ea3fde00c8ad1/"
+      ],
+      "res_paths": [],
+      "libs": [
+        "systemd"
+      ],
+      "system_libs": [
+        "rt",
+        "pthread",
+        "dl"
+      ],
+      "defines": [],
+      "cflags": [],
+      "cxxflags": [],
+      "sharedlinkflags": [],
+      "exelinkflags": [],
+      "frameworks": [],
+      "framework_paths": [],
+      "names": {},
+      "filenames": {},
+      "build_modules": {},
+      "build_modules_paths": {},
+      "cppflags": [],
+      "name": "libsystemd"
+    },
+    {
+      "version": "2.66",
+      "description": "This is a library for getting and setting POSIX.1e (formerly POSIX 6) draft 15 capabilities",
+      "rootpath": "/home/user/.conan/data/libcap/2.66/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c",
+      "sysroot": "",
+      "include_paths": [
+        "/home/user/.conan/data/libcap/2.66/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c/include"
+      ],
+      "lib_paths": [
+        "/home/user/.conan/data/libcap/2.66/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c/lib"
+      ],
+      "bin_paths": [],
+      "build_paths": [],
+      "res_paths": [],
+      "libs": [
+        "cap"
+      ],
+      "system_libs": [],
+      "defines": [],
+      "cflags": [],
+      "cxxflags": [],
+      "sharedlinkflags": [],
+      "exelinkflags": [],
+      "frameworks": [],
+      "framework_paths": [],
+      "names": {},
+      "filenames": {},
+      "build_modules": {},
+      "build_modules_paths": {},
+      "cppflags": [],
+      "name": "libcap"
+    },
+    {
+      "version": "2.36.2",
+      "description": "The libmount library is used to parse /etc/fstab, /etc/mtab and /proc/self/mountinfo files, manage the mtab file, evaluate mount options, etc",
+      "rootpath": "/home/user/.conan/data/libmount/2.36.2/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c",
+      "sysroot": "",
+      "include_paths": [
+        "/home/user/.conan/data/libmount/2.36.2/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c/include",
+        "/home/user/.conan/data/libmount/2.36.2/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c/include/libmount"
+      ],
+      "lib_paths": [
+        "/home/user/.conan/data/libmount/2.36.2/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c/lib"
+      ],
+      "bin_paths": [
+        "/home/user/.conan/data/libmount/2.36.2/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c/bin"
+      ],
+      "build_paths": [
+        "/home/user/.conan/data/libmount/2.36.2/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c/"
+      ],
+      "res_paths": [],
+      "libs": [
+        "mount",
+        "blkid"
+      ],
+      "system_libs": [
+        "rt"
+      ],
+      "defines": [],
+      "cflags": [],
+      "cxxflags": [],
+      "sharedlinkflags": [],
+      "exelinkflags": [],
+      "frameworks": [],
+      "framework_paths": [],
+      "names": {},
+      "filenames": {},
+      "build_modules": {},
+      "build_modules_paths": {},
+      "cppflags": [],
+      "name": "libmount"
+    },
+    {
+      "version": "3.3",
+      "description": "Security-enhanced Linux is a patch of the Linux kernel and a number of utilities with enhanced security functionality designed to add mandatory access controls to Linux",
+      "rootpath": "/home/user/.conan/data/libselinux/3.3/_/_/package/8c6c9e6ae1f4f254a8b94054c1146c7652c54203",
+      "sysroot": "",
+      "include_paths": [
+        "/home/user/.conan/data/libselinux/3.3/_/_/package/8c6c9e6ae1f4f254a8b94054c1146c7652c54203/include"
+      ],
+      "lib_paths": [
+        "/home/user/.conan/data/libselinux/3.3/_/_/package/8c6c9e6ae1f4f254a8b94054c1146c7652c54203/lib"
+      ],
+      "bin_paths": [],
+      "build_paths": [],
+      "res_paths": [],
+      "libs": [
+        "selinux",
+        "sepol"
+      ],
+      "system_libs": [],
+      "defines": [],
+      "cflags": [],
+      "cxxflags": [],
+      "sharedlinkflags": [],
+      "exelinkflags": [],
+      "frameworks": [],
+      "framework_paths": [],
+      "names": {},
+      "filenames": {},
+      "build_modules": {},
+      "build_modules_paths": {},
+      "cppflags": [],
+      "name": "libselinux"
+    },
+    {
+      "version": "1.9.4",
+      "description": "Extremely Fast Compression algorithm",
+      "rootpath": "/home/user/.conan/data/lz4/1.9.4/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c",
+      "sysroot": "",
+      "include_paths": [
+        "/home/user/.conan/data/lz4/1.9.4/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c/include"
+      ],
+      "lib_paths": [
+        "/home/user/.conan/data/lz4/1.9.4/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c/lib"
+      ],
+      "bin_paths": [],
+      "build_paths": [
+        "/home/user/.conan/data/lz4/1.9.4/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c/"
+      ],
+      "res_paths": [],
+      "libs": [
+        "lz4"
+      ],
+      "system_libs": [],
+      "defines": [],
+      "cflags": [],
+      "cxxflags": [],
+      "sharedlinkflags": [],
+      "exelinkflags": [],
+      "frameworks": [],
+      "framework_paths": [],
+      "names": {
+        "pkg_config": "liblz4"
+      },
+      "filenames": {},
+      "build_modules": {
+        "cmake_find_package": [
+          "lib/cmake/conan-official-lz4-targets.cmake"
+        ],
+        "cmake_find_package_multi": [
+          "lib/cmake/conan-official-lz4-targets.cmake"
+        ]
+      },
+      "build_modules_paths": {
+        "cmake_find_package": [
+          "/home/user/.conan/data/lz4/1.9.4/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c/lib/cmake/conan-official-lz4-targets.cmake"
+        ],
+        "cmake_find_package_multi": [
+          "/home/user/.conan/data/lz4/1.9.4/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c/lib/cmake/conan-official-lz4-targets.cmake"
+        ]
+      },
+      "cppflags": [],
+      "name": "lz4"
+    },
+    {
+      "version": "5.4.0",
+      "description": "XZ Utils is free general-purpose data compression software with a high compression ratio. XZ Utils were written for POSIX-like systems, but also work on some not-so-POSIX systems. XZ Utils are the successor to LZMA Utils.",
+      "rootpath": "/home/user/.conan/data/xz_utils/5.4.0/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c",
+      "sysroot": "",
+      "include_paths": [
+        "/home/user/.conan/data/xz_utils/5.4.0/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c/include"
+      ],
+      "lib_paths": [
+        "/home/user/.conan/data/xz_utils/5.4.0/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c/lib"
+      ],
+      "bin_paths": [
+        "/home/user/.conan/data/xz_utils/5.4.0/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c/bin"
+      ],
+      "build_paths": [
+        "/home/user/.conan/data/xz_utils/5.4.0/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c/"
+      ],
+      "res_paths": [],
+      "libs": [
+        "lzma"
+      ],
+      "system_libs": [
+        "pthread"
+      ],
+      "defines": [
+        "LZMA_API_STATIC"
+      ],
+      "cflags": [],
+      "cxxflags": [],
+      "sharedlinkflags": [],
+      "exelinkflags": [],
+      "frameworks": [],
+      "framework_paths": [],
+      "names": {
+        "cmake_find_package": "LibLZMA",
+        "cmake_find_package_multi": "LibLZMA"
+      },
+      "filenames": {},
+      "build_modules": {
+        "cmake_find_package": [
+          "lib/cmake/conan-official-xz_utils-variables.cmake"
+        ]
+      },
+      "build_modules_paths": {
+        "cmake_find_package": [
+          "/home/user/.conan/data/xz_utils/5.4.0/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c/lib/cmake/conan-official-xz_utils-variables.cmake"
+        ]
+      },
+      "cppflags": [],
+      "name": "xz_utils"
+    },
+    {
+      "version": "1.5.4",
+      "description": "Zstandard - Fast real-time compression algorithm",
+      "rootpath": "/home/user/.conan/data/zstd/1.5.4/_/_/package/a323f39846aa3d854d842186765e8538851a7f92",
+      "sysroot": "",
+      "include_paths": [
+        "/home/user/.conan/data/zstd/1.5.4/_/_/package/a323f39846aa3d854d842186765e8538851a7f92/include"
+      ],
+      "lib_paths": [
+        "/home/user/.conan/data/zstd/1.5.4/_/_/package/a323f39846aa3d854d842186765e8538851a7f92/lib"
+      ],
+      "bin_paths": [],
+      "build_paths": [],
+      "res_paths": [],
+      "libs": [
+        "zstd"
+      ],
+      "system_libs": [
+        "pthread"
+      ],
+      "defines": [],
+      "cflags": [],
+      "cxxflags": [],
+      "sharedlinkflags": [],
+      "exelinkflags": [],
+      "frameworks": [],
+      "framework_paths": [],
+      "names": {},
+      "filenames": {},
+      "build_modules": {},
+      "build_modules_paths": {},
+      "cppflags": [],
+      "name": "zstd"
+    },
+    {
+      "version": "10.42",
+      "description": "Perl Compatible Regular Expressions",
+      "rootpath": "/home/user/.conan/data/pcre2/10.42/_/_/package/7e82c9c8d32cbe0951c733288be673b1886fa50a",
+      "sysroot": "",
+      "include_paths": [
+        "/home/user/.conan/data/pcre2/10.42/_/_/package/7e82c9c8d32cbe0951c733288be673b1886fa50a/include"
+      ],
+      "lib_paths": [
+        "/home/user/.conan/data/pcre2/10.42/_/_/package/7e82c9c8d32cbe0951c733288be673b1886fa50a/lib"
+      ],
+      "bin_paths": [
+        "/home/user/.conan/data/pcre2/10.42/_/_/package/7e82c9c8d32cbe0951c733288be673b1886fa50a/bin"
+      ],
+      "build_paths": [],
+      "res_paths": [],
+      "libs": [
+        "pcre2-posix",
+        "pcre2-8",
+        "pcre2-16",
+        "pcre2-32"
+      ],
+      "system_libs": [],
+      "defines": [
+        "PCRE2_STATIC"
+      ],
+      "cflags": [],
+      "cxxflags": [],
+      "sharedlinkflags": [],
+      "exelinkflags": [],
+      "frameworks": [],
+      "framework_paths": [],
+      "names": {
+        "cmake_find_package": "PCRE2",
+        "cmake_find_package_multi": "PCRE2",
+        "pkg_config": "libpcre2"
+      },
+      "filenames": {},
+      "build_modules": {},
+      "build_modules_paths": {},
+      "cppflags": [],
+      "name": "pcre2"
+    },
+    {
+      "version": "1.2.13",
+      "description": "A Massively Spiffy Yet Delicately Unobtrusive Compression Library (Also Free, Not to Mention Unencumbered by Patents)",
+      "rootpath": "/home/user/.conan/data/zlib/1.2.13/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c",
+      "sysroot": "",
+      "include_paths": [
+        "/home/user/.conan/data/zlib/1.2.13/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c/include"
+      ],
+      "lib_paths": [
+        "/home/user/.conan/data/zlib/1.2.13/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c/lib"
+      ],
+      "bin_paths": [],
+      "build_paths": [
+        "/home/user/.conan/data/zlib/1.2.13/_/_/package/d13c97721d7bdc192ca6529684f2b79beeae8a7c/"
+      ],
+      "res_paths": [],
+      "libs": [
+        "z"
+      ],
+      "system_libs": [],
+      "defines": [],
+      "cflags": [],
+      "cxxflags": [],
+      "sharedlinkflags": [],
+      "exelinkflags": [],
+      "frameworks": [],
+      "framework_paths": [],
+      "names": {
+        "cmake_find_package": "ZLIB",
+        "cmake_find_package_multi": "ZLIB"
+      },
+      "filenames": {},
+      "build_modules": {},
+      "build_modules_paths": {},
+      "cppflags": [],
+      "name": "zlib"
+    },
+    {
+      "version": "1.0.8",
+      "description": "bzip2 is a free and open-source file compression program that uses the Burrows Wheeler algorithm.",
+      "rootpath": "/home/user/.conan/data/bzip2/1.0.8/_/_/package/ad18e1e856ff78d73ad6f3c9a214f85abf2d0550",
+      "sysroot": "",
+      "include_paths": [
+        "/home/user/.conan/data/bzip2/1.0.8/_/_/package/ad18e1e856ff78d73ad6f3c9a214f85abf2d0550/include"
+      ],
+      "lib_paths": [
+        "/home/user/.conan/data/bzip2/1.0.8/_/_/package/ad18e1e856ff78d73ad6f3c9a214f85abf2d0550/lib"
+      ],
+      "bin_paths": [
+        "/home/user/.conan/data/bzip2/1.0.8/_/_/package/ad18e1e856ff78d73ad6f3c9a214f85abf2d0550/bin"
+      ],
+      "build_paths": [
+        "/home/user/.conan/data/bzip2/1.0.8/_/_/package/ad18e1e856ff78d73ad6f3c9a214f85abf2d0550/"
+      ],
+      "res_paths": [],
+      "libs": [
+        "bz2"
+      ],
+      "system_libs": [],
+      "defines": [],
+      "cflags": [],
+      "cxxflags": [],
+      "sharedlinkflags": [],
+      "exelinkflags": [],
+      "frameworks": [],
+      "framework_paths": [],
+      "names": {
+        "cmake_find_package": "BZip2",
+        "cmake_find_package_multi": "BZip2"
+      },
+      "filenames": {},
+      "build_modules": {
+        "cmake_find_package": [
+          "lib/cmake/conan-official-bzip2-variables.cmake"
+        ]
+      },
+      "build_modules_paths": {
+        "cmake_find_package": [
+          "/home/user/.conan/data/bzip2/1.0.8/_/_/package/ad18e1e856ff78d73ad6f3c9a214f85abf2d0550/lib/cmake/conan-official-bzip2-variables.cmake"
+        ]
+      },
+      "cppflags": [],
+      "name": "bzip2"
+    }
+  ],
+  "settings": {
+    "arch": "x86_64",
+    "arch_build": "x86_64",
+    "build_type": "Debug",
+    "compiler": "gcc",
+    "compiler.libcxx": "libstdc++11",
+    "compiler.version": "12",
+    "os": "Linux",
+    "os_build": "Linux"
+  },
+  "options": {
+    "libsystemd": {
+      "fPIC": "True",
+      "shared": "False",
+      "with_lz4": "True",
+      "with_selinux": "True",
+      "with_xz": "True",
+      "with_zstd": "True"
+    }
+  }
+}

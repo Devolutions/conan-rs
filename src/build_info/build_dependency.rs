@@ -56,6 +56,7 @@ pub struct BuildDependency {
     pub(crate) build_paths: Vec<String>,
     pub(crate) res_paths: Vec<String>,
     pub(crate) libs: Vec<String>,
+    pub(crate) system_libs: Option<Vec<String>>,
     pub(crate) defines: Vec<String>,
     pub(crate) cflags: Vec<String>,
     pub(crate) cxxflags: Option<Vec<String>>,
