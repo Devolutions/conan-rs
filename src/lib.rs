@@ -179,8 +179,10 @@ pub enum BuildPolicy {
     Outdated,
 }
 
+/// "conan install" command runner
 pub struct InstallCommand<'a> {
-    profile: Option<&'a str>,
+    profile_host: Option<&'a str>,
+    profile_build: Option<&'a str>,
     remote: Option<&'a str>,
     build_settings: BuildSettings,
     build_policy: Option<BuildPolicy>,
@@ -189,8 +191,11 @@ pub struct InstallCommand<'a> {
     update_check: bool,
 }
 
+/// "conan install" command arguments builder
+#[derive(Default)]
 pub struct InstallCommandBuilder<'a> {
-    profile: Option<&'a str>,
+    profile_host: Option<&'a str>,
+    profile_build: Option<&'a str>,
     remote: Option<&'a str>,
     build_settings: Option<BuildSettings>,
     build_policy: Option<BuildPolicy>,
@@ -201,19 +206,23 @@ pub struct InstallCommandBuilder<'a> {
 
 impl<'a> InstallCommandBuilder<'a> {
     pub fn new() -> InstallCommandBuilder<'a> {
-        InstallCommandBuilder {
-            profile: None,
-            remote: None,
-            build_settings: None,
-            build_policy: None,
-            recipe_path: None,
-            output_dir: None,
-            update_check: false,
-        }
+        InstallCommandBuilder::default()
     }
 
-    pub fn with_profile(mut self, profile: &'a str) -> Self {
-        self.profile = Some(profile);
+    /// Apply the specified profile to the host machine.
+    pub fn with_profile(self, profile: &'a str) -> Self {
+        self.with_host_profile(profile)
+    }
+
+    /// Apply the specified profile to the host machine.
+    pub fn with_host_profile(mut self, profile: &'a str) -> Self {
+        self.profile_host = Some(profile);
+        self
+    }
+
+    /// Apply the specified profile to the build machine.
+    pub fn with_build_profile(mut self, profile: &'a str) -> Self {
+        self.profile_build = Some(profile);
         self
     }
 
@@ -249,7 +258,8 @@ impl<'a> InstallCommandBuilder<'a> {
 
     pub fn build(self) -> InstallCommand<'a> {
         InstallCommand {
-            profile: self.profile,
+            profile_host: self.profile_host,
+            profile_build: self.profile_build,
             remote: self.remote,
             build_settings: self.build_settings.unwrap_or_default(),
             build_policy: self.build_policy,
@@ -267,8 +277,12 @@ impl<'a> InstallCommand<'a> {
         args.push("install");
         args.extend(&["-g", "json"]);
 
-        if let Some(profile) = &self.profile {
-            args.extend(&["-pr", profile]);
+        if let Some(profile) = &self.profile_host {
+            args.extend(&["--profile:host", profile]);
+        }
+
+        if let Some(profile) = &self.profile_build {
+            args.extend(&["--profile:build", profile]);
         }
 
         if let Some(remote) = &self.remote {
@@ -346,7 +360,7 @@ impl<'a> InstallCommand<'a> {
 
 #[test]
 fn test_install_builder() {
-    use build_info::build_settings::{BuildType};
+    use build_info::build_settings::BuildType;
 
     let build_settings = BuildSettings::new().build_type(BuildType::Release);
     let command = InstallCommandBuilder::new()
@@ -360,12 +374,40 @@ fn test_install_builder() {
             "install",
             "-g",
             "json",
-            "-pr",
+            "--profile:host",
             "linux-x86_64",
             "-b",
             "missing",
             "-s",
             "build_type=Release"
+        ]
+    );
+}
+
+#[test]
+fn test_install_builder_cross() {
+    use build_info::build_settings::BuildType;
+
+    let build_settings = BuildSettings::new().build_type(BuildType::Debug);
+    let command = InstallCommandBuilder::new()
+        .with_host_profile("windows-x86_64")
+        .with_build_profile("linux-x86_64")
+        .build_settings(build_settings)
+        .build_policy(BuildPolicy::Always)
+        .build();
+    assert_eq!(
+        command.args(),
+        [
+            "install",
+            "-g",
+            "json",
+            "--profile:host",
+            "windows-x86_64",
+            "--profile:build",
+            "linux-x86_64",
+            "-b",
+            "-s",
+            "build_type=Debug"
         ]
     );
 }
