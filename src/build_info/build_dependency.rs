@@ -1,6 +1,3 @@
-extern crate serde;
-extern crate serde_json;
-
 use serde::de::{SeqAccess, Visitor};
 use serde::{Deserialize, Deserializer, Serialize};
 use std::fmt;
