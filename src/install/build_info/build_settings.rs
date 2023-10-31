@@ -2,6 +2,7 @@ use std::env;
 
 use serde::{Deserialize, Serialize};
 
+#[allow(dead_code)]
 #[derive(Clone, PartialEq)]
 pub enum BuildType {
     None,

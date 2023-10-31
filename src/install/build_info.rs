@@ -9,8 +9,8 @@ use std::path::Path;
 
 use serde::{Deserialize, Serialize};
 
-use build_dependency::BuildDependency;
-use build_settings::BuildSettings;
+pub use build_dependency::BuildDependency;
+pub use build_settings::BuildSettings;
 
 // conan build info
 #[derive(Serialize, Deserialize)]

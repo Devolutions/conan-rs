@@ -1,7 +1,7 @@
-mod build_info;
+mod build;
 mod install;
 mod util;
 
 // API
-pub use build_info::BuildInfo;
-pub use install::{InstallCommand, InstallCommandBuilder};
+pub use build::{BuildCommand, BuildCommandBuilder};
+pub use install::{build_info::BuildSettings, BuildPolicy, InstallCommand, InstallCommandBuilder};

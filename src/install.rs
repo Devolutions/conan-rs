@@ -1,6 +1,8 @@
 #[cfg(test)]
 mod test;
 
+pub mod build_info;
+
 mod profile;
 mod remote;
 
@@ -10,7 +12,7 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use thiserror::Error;
 
-use crate::build_info::{build_settings::BuildSettings, BuildInfo};
+use build_info::{build_settings::BuildSettings, BuildInfo};
 
 #[derive(Debug, Error)]
 pub enum ConanInstallError {
@@ -40,7 +42,7 @@ pub struct InstallCommand<'a> {
     profile_build: Option<&'a str>,
     remote: Option<&'a str>,
     build_settings: BuildSettings,
-    build_options: Option<Vec<(&'a str, &'a str)>>,
+    build_options: Option<Vec<&'a str>>,
     build_policy: Option<BuildPolicy>,
     recipe_path: Option<PathBuf>,
     output_dir: Option<PathBuf>,
@@ -54,7 +56,7 @@ pub struct InstallCommandBuilder<'a> {
     profile_build: Option<&'a str>,
     remote: Option<&'a str>,
     build_settings: Option<BuildSettings>,
-    build_options: Option<Vec<(&'a str, &'a str)>>,
+    build_options: Option<Vec<&'a str>>,
     build_policy: Option<BuildPolicy>,
     recipe_path: Option<PathBuf>,
     output_dir: Option<PathBuf>,
@@ -98,11 +100,12 @@ impl<'a> InstallCommandBuilder<'a> {
         self
     }
 
-    pub fn with_option(mut self, key: &'a str, value: &'a str) -> Self {
+    pub fn with_options(mut self, opts: &[&'a str]) -> Self {
         if self.build_options.is_none() {
             self.build_options = Some(Vec::new());
         }
-        self.build_options.as_mut().unwrap().push((key, value));
+        // NOTE: Here self.build_options is guaranteed to be Some
+        self.build_options.as_mut().unwrap().extend(opts);
         self
     }
 
@@ -177,9 +180,7 @@ impl<'a> InstallCommand<'a> {
         }
 
         if let Some(build_options) = &self.build_options {
-            for (key, value) in build_options {
-                args.extend(&["-o", key, "=", value]);
-            }
+            args.extend(build_options.iter().map(|x| ["-o", *x]).flatten());
         }
 
         let output_dir = self.output_dir();
