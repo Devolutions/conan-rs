@@ -9,7 +9,7 @@ Add conan to the Cargo.toml build-dependencies section:
 ```toml
 # Cargo.toml
 [build-dependencies]
-conan = "0.3"
+conan = "0.4.1"
 ```
 
 Modify the project build.rs script to invoke cargo and emit the conan build information automatically.
@@ -37,6 +37,15 @@ fn main() {
     if let Some(build_info) = command.generate() {
         println!("using conan build info");
         build_info.cargo_emit();
+    }
+
+    let build_comman = BuildCommandBuilder::new()
+        .with_recipe_path(PathBuf::from("../../../conanfile.py"))
+        .with_build_path(PathBuf::from("../../../build/"))
+        .build();
+
+    if let Some(exit_status) = build_comman.run() {
+        println!("conan build exited with {}", exit_status);
     }
 }
 ```
