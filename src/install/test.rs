@@ -1,5 +1,7 @@
-use super::{BuildPolicy, InstallCommandBuilder};
-use crate::build_info::build_settings::{BuildSettings, BuildType};
+use super::{
+    build_info::{build_settings::BuildType, BuildSettings},
+    BuildPolicy, InstallCommandBuilder,
+};
 
 #[test]
 fn test_install_builder() -> Result<(), Box<dyn std::error::Error>> {
@@ -61,7 +63,7 @@ fn test_install_builder_with_options() -> Result<(), Box<dyn std::error::Error>>
     let command = InstallCommandBuilder::new()
         .with_profile("linux-x86_64")
         .build_settings(build_settings)
-        .with_option("shared", "True")
+        .with_options(&["shared=True", "build_type=Release"])
         .build_policy(BuildPolicy::Missing)
         .build();
     assert_eq!(
@@ -75,9 +77,9 @@ fn test_install_builder_with_options() -> Result<(), Box<dyn std::error::Error>>
             "-b",
             "missing",
             "-o",
-            "shared",
-            "=",
-            "True",
+            "shared=True",
+            "-o",
+            "build_type=Release",
             "-s",
             "build_type=Release"
         ]

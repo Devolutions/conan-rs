@@ -18,6 +18,8 @@ pub fn find_program() -> Option<PathBuf> {
     which::which("conan").ok()
 }
 
+// NOTE: Will be used in the future
+#[allow(dead_code)]
 pub fn find_version() -> Option<String> {
     let conan_program = find_program()?;
     let conan_program = conan_program.as_path().to_str().unwrap().to_string();
