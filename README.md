@@ -30,6 +30,7 @@ fn main() {
     let command = InstallCommandBuilder::new()
         .with_profile(&conan_profile)
         .build_policy(BuildPolicy::Missing)
+        .with_option("sign", "True")
         .recipe_path(Path::new("conanfile.txt"))
         .build();
 

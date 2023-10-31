@@ -1,5 +1,3 @@
-extern crate serde;
-
 use std::env;
 
 use serde::{Deserialize, Serialize};
