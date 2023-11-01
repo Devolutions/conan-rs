@@ -40,6 +40,7 @@ where
     deserializer.deserialize_option(JsonStringOrStringVecVisitor)
 }
 
+/// A build dependency.
 #[derive(Serialize, Deserialize)]
 pub struct BuildDependency {
     pub(crate) version: String,
@@ -72,8 +73,8 @@ impl BuildDependency {
         self.lib_paths.get(0).map(|x| &**x)
     }
 
-    pub fn get_include_dir(&self) -> Option<&str> {
-        self.include_paths.get(0).map(|x| &**x)
+    pub fn get_include_dirs(&self) -> Vec<&str> {
+        self.include_paths.iter().map(|x| &**x).collect()
     }
 
     pub fn get_binary_dir(&self) -> Option<&str> {

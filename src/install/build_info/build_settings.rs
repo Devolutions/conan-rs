@@ -2,6 +2,7 @@ use std::env;
 
 use serde::{Deserialize, Serialize};
 
+/// Conan build type
 #[allow(dead_code)]
 #[derive(Clone, PartialEq)]
 pub enum BuildType {
@@ -30,6 +31,7 @@ impl BuildType {
     }
 }
 
+/// Conan build settings
 #[derive(Serialize, Deserialize)]
 pub struct BuildSettings {
     pub(crate) arch: Option<String>,

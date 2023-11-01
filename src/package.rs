@@ -32,10 +32,12 @@ pub enum ConanPackageError {
     Other(String),
 }
 
+/// Thin Wrapper around binary packages that contain libraries and headers
 pub struct ConanPackage {
     path: PathBuf,
 }
 
+/// "conan package" command runner
 #[derive(Default)]
 pub struct PackageCommand {
     build_path: Option<PathBuf>,
@@ -57,6 +59,7 @@ impl Default for PackageCommandBuilder {
     }
 }
 
+/// Command arguments builder for "conan package"
 pub struct PackageCommandBuilder {
     build_path: Option<PathBuf>,
     install_path: Option<PathBuf>,
