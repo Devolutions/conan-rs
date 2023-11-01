@@ -3,7 +3,6 @@ mod tests;
 
 use super::util::find_program;
 use std::fs;
-use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
 use std::process::ExitStatus;
@@ -22,6 +21,12 @@ pub enum ConanPackageError {
 
     #[error("Command execution failed")]
     CommandExecutionFailed,
+
+    #[error("I/O error: {0}")]
+    Io(#[from] std::io::Error),
+
+    #[error("Invalid file name: {0}")]
+    InvalidFileName(String),
 
     #[error("Other error: {0}")]
     Other(String),
@@ -159,40 +164,38 @@ impl ConanPackage {
         ConanPackage { path }
     }
 
-    pub fn emit_cargo_libs_linkage(&self) -> std::io::Result<()> {
-        fn emit_link_info(path: &Path) -> std::io::Result<()> {
-            if path.is_dir() {
-                for entry in fs::read_dir(path)? {
-                    let entry = entry?;
-                    emit_link_info(&entry.path())?;
-                }
-            } else if let Some(ext) = path.extension().and_then(|s| s.to_str()) {
-                match ext {
-                    "a" | "so" | "dll" | "dylib" => {
-                        if let Some(file_stem) = path.file_stem().and_then(|s| s.to_str()) {
-                            // Here we strip the "lib" prefix from library names, which is a common convention.
-                            // For example, a file named "libexample.a" would result in "cargo:rustc-link-lib=static:example".
-                            let lib_name = if file_stem.starts_with("lib") {
-                                &file_stem[3..]
-                            } else {
-                                file_stem
-                            };
+    pub fn emit_cargo_libs_linkage(&self, libs_dir: PathBuf) -> Result<(), ConanPackageError> {
+        let libs_dir_path = self.path.join(libs_dir);
 
-                            let kind = if ext == "a" { "static" } else { "dylib" };
+        let entries = fs::read_dir(libs_dir_path.clone())?;
 
-                            println!("cargo:rustc-link-lib={}={}", kind, lib_name);
-                            println!(
-                                "cargo:rustc-link-search=native={}",
-                                path.parent().unwrap_or(path).display()
-                            );
-                        }
-                    }
-                    _ => {}
+        for entry in entries {
+            let lib_path = entry?.path();
+            if lib_path.is_file() {
+                let lib_name = lib_path
+                    .file_stem()
+                    .and_then(|n| n.to_str())
+                    .ok_or_else(|| ConanPackageError::InvalidFileName(lib_path.display().to_string()))?;
+
+                let lib_name = if lib_name.starts_with("lib") {
+                    &lib_name[3..]
+                } else {
+                    lib_name
+                };
+
+                if let Some(lib_suffix) = lib_path.extension().and_then(|s| s.to_str()) {
+                    let lib_type = match lib_suffix {
+                        "so" | "dll" | "dylib" => "dylib",
+                        "a" | "lib" => "static",
+                        _ => continue,
+                    };
+                    println!("cargo:rustc-link-lib={}={}", lib_type, lib_name);
                 }
             }
-            Ok(())
         }
 
-        emit_link_info(&self.path)
+        println!("cargo:rustc-link-search=native={}", libs_dir_path.display());
+
+        Ok(())
     }
 }
