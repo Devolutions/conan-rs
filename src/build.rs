@@ -12,6 +12,7 @@ use crate::util::find_program;
 #[derive(Debug, Error)]
 pub enum ConanBuildError {}
 
+/// A command for building a Conan package.
 pub struct BuildCommand {
     recipe_path: Option<PathBuf>,
     build_path: Option<PathBuf>,
@@ -23,6 +24,7 @@ pub struct BuildCommand {
     should_install: bool,
 }
 
+/// Builder pattern for creating a `BuildCommand`
 #[derive(Default)]
 pub struct BuildCommandBuilder {
     recipe_path: Option<PathBuf>,

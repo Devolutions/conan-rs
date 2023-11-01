@@ -28,6 +28,7 @@ pub enum ConanInstallError {
     Other(String),
 }
 
+/// Conan build policy
 #[derive(Clone, PartialEq)]
 pub enum BuildPolicy {
     Never,
