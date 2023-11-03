@@ -8,13 +8,13 @@ fn test_conan_build_info() {
     assert_eq!(openssl.get_binary_dir(), None);
     let openssl_dir = openssl.get_root_dir().unwrap();
     let openssl_lib_dir = openssl.get_library_dir().unwrap();
-    let openssl_inc_dir = openssl.get_include_dir().unwrap();
+    let openssl_inc_dir = openssl.get_include_dirs();
     assert_eq!(
         openssl_dir,
         "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6"
     );
     assert_eq!(openssl_lib_dir, "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6/lib");
-    assert_eq!(openssl_inc_dir, "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6/include");
+    assert_eq!(openssl_inc_dir.first().unwrap().to_owned(), "/home/awake/.conan/data/openssl/1.1.1b-2/devolutions/stable/package/de9c231f84c85def9df09875e1785a1319fa8cb6/include");
 
     let dependencies = build_info.dependencies();
     assert_eq!(dependencies.len(), 1);
