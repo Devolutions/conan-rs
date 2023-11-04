@@ -196,9 +196,15 @@ impl ConanPackage {
                 }
             }
         }
-
         println!("cargo:rustc-link-search=native={}", libs_dir_path.display());
 
         Ok(())
+    }
+
+    pub fn emit_cargo_rpath_linkage<F>(&self, f: F)
+    where
+        F: Fn(&PathBuf) -> PathBuf,
+    {
+        println!("cargo:rustc-link-arg=-Wl,-rpath={}", f(&self.path).display());
     }
 }
