@@ -53,12 +53,12 @@ fn main() {
         build_info.cargo_emit();
     }
 
-    let build_comman = BuildCommandBuilder::new()
+    let build_command = BuildCommandBuilder::new()
         .with_recipe_path(PathBuf::from("../../../conanfile.py"))
         .with_build_path(PathBuf::from("../../../build/"))
         .build();
 
-    if let Some(exit_status) = build_comman.run() {
+    if let Some(exit_status) = build_command.run() {
         println!("conan build exited with {}", exit_status);
     }
 }
