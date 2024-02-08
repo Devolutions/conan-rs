@@ -1,0 +1,32 @@
+name: Rust CI/CD
+
+on:
+  pull_request:
+    types: [synchronize, opened, reopened]
+  push:
+    tags:
+      - '*'
+
+jobs:
+  test_job:
+    runs-on: ubuntu-latest
+    name: Testing on Pull Request
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v3
+      - name: "Test local rust"
+        uses: Kristories/cargo-test@v1.0.0
+
+  publish_crate:
+    runs-on: ubuntu-latest
+    name: Publish Crate on New Tag
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') && github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - uses: katyo/publish-crates@v1
+        with:
+          registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
