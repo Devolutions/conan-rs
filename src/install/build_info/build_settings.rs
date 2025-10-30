@@ -40,6 +40,8 @@ pub struct BuildSettings {
     pub(crate) compiler: Option<String>,
     #[serde(rename = "compiler.libcxx")]
     pub(crate) compiler_libcxx: Option<String>,
+    #[serde(rename = "compiler.runtime")]
+    pub(crate) compiler_runtime: Option<String>,
     #[serde(rename = "compiler.version")]
     pub(crate) compiler_version: Option<String>,
     pub(crate) os: Option<String>,
@@ -60,6 +62,7 @@ impl BuildSettings {
             build_type: None,
             compiler: None,
             compiler_libcxx: None,
+            compiler_runtime: None,
             compiler_version: None,
             os: None,
             os_build: None,
@@ -87,6 +90,10 @@ impl BuildSettings {
 
         if let Some(compiler_libcxx) = &self.compiler_libcxx {
             settings.push(format!("{}={}", "compiler.libcxx", compiler_libcxx));
+        }
+
+        if let Some(compiler_runtime) = &self.compiler_runtime {
+            settings.push(format!("{}={}", "compiler.runtime", compiler_runtime));
         }
 
         if let Some(compiler_version) = &self.compiler_version {
@@ -143,6 +150,11 @@ impl BuildSettings {
 
     pub fn compiler_libcxx(mut self, compiler_libcxx: String) -> Self {
         self.compiler_libcxx = Some(compiler_libcxx);
+        self
+    }
+
+    pub fn compiler_runtime(mut self, compiler_runtime: String) -> Self {
+        self.compiler_runtime = Some(compiler_runtime);
         self
     }
 
