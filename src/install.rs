@@ -189,6 +189,7 @@ impl<'a> InstallCommand<'a> {
             let current_dir = env::current_dir()?.to_path_buf();
             if output_dir != &current_dir {
                 args.extend(&["-if", output_dir.to_str().unwrap()]);
+                args.extend(&["-of", output_dir.to_str().unwrap()]);
             }
         }
 
